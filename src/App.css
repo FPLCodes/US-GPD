@@ -1,4 +1,8 @@
+#root {
+  width: 50%;
+}
+
 .button {
-  width: 50px;
+  width: 100px;
   height: 20px;
 }
