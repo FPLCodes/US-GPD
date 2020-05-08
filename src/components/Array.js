@@ -1,61 +1,62 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import "../App.css";
 import * as d3 from "d3";
 
 export default function Array() {
-  const w = 500;
-  const h = 100;
-
-  let arr = [];
-  for (let i = 0; i < 9; i++) {
-    arr.push(Math.round(Math.random() * 35));
-  }
-
-  const [dataset, setDataset] = useState(arr);
-  const [count, setCount] = useState(dataset.length);
   const svgRef = useRef();
+  const w = 600;
+  const h = 600;
+  const padding = 0;
+  const [dataset, setDataset] = useState([]);
 
   useEffect(() => {
-    if (count > 0) {
-      let data = [...dataset];
+    fetch(
+      "https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/GDP-data.json"
+    )
+      .then((response) => response.json())
+      .then((response) => {
+        setDataset(response.data);
+      });
+  }, []);
 
-      for (let i = 0; i < data.length; i++) {
-        setTimeout(() => {
-          for (let j = 0; j < data.length; j++) {
-            if (data[j] > data[j + 1]) {
-              let temp = data[j];
-              data[j] = data[j + 1];
-              data[j + 1] = temp;
-              console.log(data);
-            }
-          }
-          setDataset(data);
-          d3.selectAll("rect").remove();
-        }, i * 100);
-      }
-      setDataset(data);
-      d3.selectAll("rect").remove();
-      setCount(count - 1);
-    }
+  useEffect(() => {
+    console.log(dataset[0]);
+    const xScale = d3
+      .scaleLinear()
+      .domain([0, d3.max(dataset, (d) => d[0])])
+      .range([padding, w - padding]);
 
-    const svg = d3.select(svgRef.current);
-    svg
+    const yScale = d3
+      .scaleLinear()
+      .domain([0, d3.max(dataset, (d) => d[1])])
+      .range([h, 0]);
+
+    const svg = d3
+      .select(svgRef.current)
       .append("svg")
       .attr("width", w)
-      .attr("height", h)
+      .attr("height", h);
+
+    svg
       .selectAll("rect")
       .data(dataset)
       .enter()
       .append("rect")
-      .attr("x", (d, i) => i * 25)
-      .attr("y", (d) => h - 3 * d)
-      .attr("width", 20)
-      .attr("height", (d) => 3 * d);
-  }, [dataset]);
-
+      .attr("x", (d, i) => i * 2.183)
+      .attr("y", (d) => yScale(d[1]))
+      .attr("width", 2)
+      .attr("height", (d, i) => d[1])
+      .attr("fill", "skyblue")
+      .style("border", "1px solid black")
+      .attr("class", "bar")
+      .append("title")
+      .text((d) => `$${d[1]} Billion`);
+  });
   return (
-    <div>
-      <svg ref={svgRef} />
+    <div className="bg">
+      <div className="container">
+        <svg ref={svgRef} className="chart" />
+      </div>
     </div>
   );
 }
