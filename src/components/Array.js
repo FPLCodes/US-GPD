@@ -13,7 +13,6 @@ import {
 export default function Array() {
   const [dataset, setDataset] = useState([]);
   const svgRef = useRef();
-  const padding = -1;
   const w = 800;
   const h = 500;
 
@@ -35,7 +34,7 @@ export default function Array() {
 
     const xScale = scaleTime()
       .domain([min(time), maxDate])
-      .range([padding, w - padding]);
+      .range([0, w + 1]);
 
     const yScale = scaleLinear()
       .domain([0, max(dataset, (d) => d[1])])
@@ -69,12 +68,8 @@ export default function Array() {
     const xAxis = axisBottom(xScale);
     const yAxis = axisLeft(yScale);
 
-    svg
-      .append("g")
-      .attr("transform", `translate(0, ${h - padding})`)
-      .call(xAxis);
-
-    svg.append("g").attr("transform", `translate(${padding}, 0)`).call(yAxis);
+    svg.append("g").attr("transform", `translate(0, ${h})`).call(xAxis);
+    svg.append("g").attr("transform", `translate(-1, 0)`).call(yAxis);
   });
 
   return (
