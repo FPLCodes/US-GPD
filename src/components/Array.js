@@ -39,7 +39,7 @@ export default function Array() {
 
     const yScale = scaleLinear()
       .domain([0, max(dataset, (d) => d[1])])
-      .range([h - padding, padding]);
+      .range([h, 0]);
 
     const svg = select(svgRef.current)
       .append("svg")
@@ -51,18 +51,13 @@ export default function Array() {
       .data(dataset)
       .enter()
       .append("rect")
-      .attr("x", (d, i) => {
-        return xScale(time[i]);
-      })
-      .attr("y", (d) => {
-        return yScale(d[1]);
-      })
+      .attr("x", (d, i) => xScale(time[i]))
+      .attr("y", -h)
+      .style("transform", "scale(1, -1)")
       .transition()
-      .duration(1500)
+      .duration(1250)
+      .attr("height", (d) => h - yScale(d[1]))
       .attr("width", 3)
-      .attr("height", (d, i) => {
-        return h - yScale(d[1]) - padding;
-      })
       .attr("fill", "skyblue")
       .attr("class", "bar");
 
