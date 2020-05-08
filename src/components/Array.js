@@ -1,6 +1,14 @@
 import React, { useRef, useEffect, useState } from "react";
 import "../App.css";
-import * as d3 from "d3";
+import {
+  select,
+  scaleLinear,
+  scaleTime,
+  axisBottom,
+  axisLeft,
+  max,
+  min,
+} from "d3";
 
 export default function Array() {
   const [dataset, setDataset] = useState([]);
@@ -22,21 +30,18 @@ export default function Array() {
   useEffect(() => {
     const time = dataset.map((item) => new Date(item[0]));
 
-    const maxDate = new Date(d3.max(time));
+    const maxDate = new Date(max(time));
     maxDate.setMonth(maxDate.getMonth() + 3);
 
-    const xScale = d3
-      .scaleTime()
-      .domain([d3.min(time), maxDate])
+    const xScale = scaleTime()
+      .domain([min(time), maxDate])
       .range([padding, w - padding]);
 
-    const yScale = d3
-      .scaleLinear()
-      .domain([0, d3.max(dataset, (d) => d[1])])
+    const yScale = scaleLinear()
+      .domain([0, max(dataset, (d) => d[1])])
       .range([h - padding, padding]);
 
-    const svg = d3
-      .select(svgRef.current)
+    const svg = select(svgRef.current)
       .append("svg")
       .attr("width", w)
       .attr("height", h);
@@ -52,17 +57,22 @@ export default function Array() {
       .attr("y", (d) => {
         return yScale(d[1]);
       })
+      .transition()
+      .duration(1500)
       .attr("width", 3)
       .attr("height", (d, i) => {
         return h - yScale(d[1]) - padding;
       })
       .attr("fill", "skyblue")
-      .attr("class", "bar")
+      .attr("class", "bar");
+
+    svg
+      .selectAll("rect")
       .append("title")
       .text((d) => `${d[0]}\n$${d[1]} Billion`);
 
-    const xAxis = d3.axisBottom(xScale);
-    const yAxis = d3.axisLeft(yScale);
+    const xAxis = axisBottom(xScale);
+    const yAxis = axisLeft(yScale);
 
     svg
       .append("g")
