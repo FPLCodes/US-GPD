@@ -55,7 +55,7 @@ export default function Array() {
       .attr("y", -h)
       .style("transform", "scale(1, -1)")
       .transition()
-      .duration(1250)
+      .duration(1500)
       .attr("height", (d) => h - yScale(d[1]))
       .attr("width", 3)
       .attr("fill", "skyblue")
